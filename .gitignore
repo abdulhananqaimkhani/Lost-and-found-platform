@@ -1,0 +1,29 @@
+# Secrets and local config
+.env
+.env.*
+!.env.example
+*.pem
+
+# Node
+node_modules/
+
+# Python (Phase 2+)
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+
+# Editors and OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local data
+*.log
+/data/

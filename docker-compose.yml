@@ -1,0 +1,34 @@
+# PostgreSQL 16 + PostGIS for local development.
+# The port is bound to 127.0.0.1 only, so the database is not reachable from other machines.
+# Credentials come from .env (copy .env.example); nothing secret is written here.
+services:
+  db:
+    image: postgis/postgis:16-3.5-alpine
+    container_name: lostfound-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-lf}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-lostfound}
+    command:
+      # Small-laptop tuning (8 GB RAM shared with Ollama and the browser).
+      - "postgres"
+      - "-c"
+      - "shared_buffers=128MB"
+      - "-c"
+      - "work_mem=8MB"
+      - "-c"
+      - "max_connections=40"
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5442}:5432"
+    volumes:
+      - lostfound-pgdata:/var/lib/postgresql/data
+      - ./database/schema/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lf} -d ${POSTGRES_DB:-lostfound}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  lostfound-pgdata:
